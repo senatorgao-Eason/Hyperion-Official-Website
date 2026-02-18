@@ -2,12 +2,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '../App';
 import { GoogleGenAI } from '@google/genai';
-import { Send, Bot, User, Loader2, ExternalLink } from 'lucide-react';
+import { Send, Bot, User, Loader2, ExternalLink, AlertCircle } from 'lucide-react';
 
 interface Message {
   role: 'user' | 'ai';
   content: string;
   links?: { title: string; uri: string }[];
+  isError?: boolean;
 }
 
 const GeminiAdvisor: React.FC = () => {
@@ -24,15 +25,23 @@ const GeminiAdvisor: React.FC = () => {
   }, [messages]);
 
   const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
+    const trimmedInput = input.trim();
+    if (!trimmedInput || isLoading) return;
 
-    const userMessage = input;
+    const userMessage = trimmedInput;
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setInput('');
     setIsLoading(true);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+      // 安全地获取环境变量中的 API Key
+      const apiKey = typeof process !== 'undefined' ? process.env.API_KEY : undefined;
+      
+      if (!apiKey) {
+        throw new Error('MISSING_API_KEY');
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
       const systemPrompt = `You are the Senior Macro Policy Advisor for Hyperion Investment Fund. 
         Hyperion specializes in primary and secondary markets. Our edge is deep macro-economic research and policy interpretation.
         Respond in ${lang === 'en' ? 'English' : 'Chinese'}. 
@@ -40,8 +49,9 @@ const GeminiAdvisor: React.FC = () => {
         Always provide insights into how recent policy shifts or macro trends might affect investment landscapes.
         If the user asks about specific news, use the provided search tool to give up-to-date answers.`;
 
+      // 使用更强大的 Pro 模型进行宏观分析
       const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: 'gemini-3-pro-preview',
         contents: userMessage,
         config: {
           systemInstruction: systemPrompt,
@@ -51,17 +61,36 @@ const GeminiAdvisor: React.FC = () => {
 
       const aiText = response.text || (lang === 'en' ? "I'm analyzing the markets, but couldn't formulate a specific response right now." : "我正在分析市场，但目前无法给出具体的回复。");
       
-      // Extract grounding chunks if available
+      // 提取 Google 搜索的参考来源
       const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
-      const links = groundingChunks?.map((chunk: any) => ({
-        title: chunk.web?.title || 'Source',
-        uri: chunk.web?.uri || '#'
-      })).filter((link: any) => link.uri !== '#').slice(0, 3);
+      const links = groundingChunks
+        ?.map((chunk: any) => {
+          if (chunk.web) {
+            return { title: chunk.web.title || 'Source', uri: chunk.web.uri };
+          }
+          return null;
+        })
+        .filter((link: any): link is { title: string; uri: string } => !!link && !!link.uri)
+        .slice(0, 3);
 
       setMessages(prev => [...prev, { role: 'ai', content: aiText, links }]);
-    } catch (error) {
-      console.error('Gemini Error:', error);
-      setMessages(prev => [...prev, { role: 'ai', content: lang === 'en' ? "An error occurred while accessing macro data." : "获取宏观数据时发生错误。" }]);
+    } catch (error: any) {
+      console.error('Hyperion AI Advisor Error:', error);
+      let errorMessage = lang === 'en' 
+        ? "The AI Advisor is temporarily unavailable. Please verify your environment configuration." 
+        : "AI 宏观顾问暂时不可用。请检查您的环境配置（如 API 密钥是否设置）。";
+      
+      if (error.message === 'MISSING_API_KEY') {
+        errorMessage = lang === 'en' 
+          ? "Configuration error: API Key is missing. Please set API_KEY in your deployment environment." 
+          : "配置错误：缺少 API 密钥。请在部署环境中设置 API_KEY。";
+      }
+
+      setMessages(prev => [...prev, { 
+        role: 'ai', 
+        content: errorMessage, 
+        isError: true 
+      }]);
     } finally {
       setIsLoading(false);
     }
@@ -92,7 +121,9 @@ const GeminiAdvisor: React.FC = () => {
             <div className="bg-slate-700/30 p-8 rounded-full mb-6">
               <Bot className="w-16 h-16 text-amber-500/50" />
             </div>
-            <h4 className="text-white font-semibold text-xl mb-2">How can I assist your strategy?</h4>
+            <h4 className="text-white font-semibold text-xl mb-2">
+              {lang === 'en' ? 'How can I assist your strategy?' : '我能为您提供什么策略建议？'}
+            </h4>
             <p className="text-slate-400">
               {lang === 'en' 
                 ? "Inquire about global interest rates, regulatory shifts, or specific industry policy impacts."
@@ -103,12 +134,19 @@ const GeminiAdvisor: React.FC = () => {
         {messages.map((msg, idx) => (
           <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`flex max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-              <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg ${msg.role === 'user' ? 'bg-amber-600 ml-4' : 'bg-slate-700 mr-4'}`}>
+              <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg ${
+                msg.role === 'user' ? 'bg-amber-600 ml-4' : msg.isError ? 'bg-rose-900 mr-4' : 'bg-slate-700 mr-4'
+              }`}>
                 {msg.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
               </div>
               <div className={`p-5 rounded-2xl text-[15px] leading-relaxed shadow-sm ${
-                msg.role === 'user' ? 'bg-amber-600 text-white font-medium' : 'bg-slate-700/50 text-slate-200 border border-white/5'
+                msg.role === 'user' 
+                  ? 'bg-amber-600 text-white font-medium' 
+                  : msg.isError 
+                    ? 'bg-rose-950/50 text-rose-200 border border-rose-500/30' 
+                    : 'bg-slate-700/50 text-slate-200 border border-white/5'
               }`}>
+                {msg.isError && <AlertCircle className="w-4 h-4 mb-1 text-rose-400" />}
                 {msg.content}
                 
                 {msg.links && msg.links.length > 0 && (
@@ -136,7 +174,9 @@ const GeminiAdvisor: React.FC = () => {
           <div className="flex justify-start">
              <div className="flex items-center space-x-3 bg-slate-700/30 px-5 py-3 rounded-2xl border border-white/5">
                 <Loader2 className="w-4 h-4 text-amber-500 animate-spin" />
-                <span className="text-slate-400 text-sm font-medium">Hyperion Intelligence Processing...</span>
+                <span className="text-slate-400 text-sm font-medium">
+                  {lang === 'en' ? 'Hyperion Intelligence Processing...' : 'Hyperion 智库分析中...'}
+                </span>
              </div>
           </div>
         )}

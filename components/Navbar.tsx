@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../App';
 import { Menu, X, Globe, Share2, Check } from 'lucide-react';
+import Logo from './Logo';
 
 interface NavbarProps {
   onHomeClick: (sectionId?: string) => void;
@@ -44,9 +45,9 @@ const Navbar: React.FC<NavbarProps> = ({ onHomeClick }) => {
           <div className="flex items-center">
             <button 
               onClick={() => onHomeClick('home')} 
-              className="text-2xl font-bold tracking-[0.15em] serif text-white hover:text-amber-500 transition-colors"
+              className="hover:opacity-80 transition-opacity"
             >
-              HYPERION
+              <Logo size="sm" />
             </button>
           </div>
 
@@ -56,7 +57,7 @@ const Navbar: React.FC<NavbarProps> = ({ onHomeClick }) => {
               <button 
                 key={link.name} 
                 onClick={() => onHomeClick(link.section)}
-                className="text-xs uppercase tracking-[0.2em] font-bold text-slate-300 hover:text-amber-500 transition-colors"
+                className="text-[11px] uppercase tracking-[0.2em] font-bold text-slate-300 hover:text-amber-500 transition-colors"
               >
                 {link.name}
               </button>
@@ -96,6 +97,9 @@ const Navbar: React.FC<NavbarProps> = ({ onHomeClick }) => {
       {/* Mobile Nav Overlay */}
       <div className={`fixed inset-0 bg-slate-950 z-40 transition-transform duration-500 lg:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex flex-col h-full pt-24 px-8 space-y-8 text-center">
+          <div className="flex justify-center mb-4">
+            <Logo size="lg" />
+          </div>
           {navLinks.map((link) => (
             <button 
               key={link.name} 

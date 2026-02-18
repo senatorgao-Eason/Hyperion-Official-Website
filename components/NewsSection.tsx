@@ -5,28 +5,28 @@ import { NewsInsight } from '../types';
 
 const insights: NewsInsight[] = [
   { 
-    id: 1, 
-    date: "2025.05.14", 
-    titleEn: "Macro Pivot: Analyzing the New Interest Rate Paradigm", 
-    titleCn: "宏观转向：深度解读全球利率新常态",
-    excerptEn: "As central banks adjust their long-term inflation targets, we explore the implications for equity valuations...",
-    excerptCn: "随着全球央行调整长期通胀目标，我们探讨其对股票估值的深远影响..."
+    id: 3, 
+    date: "2026.02.10", 
+    titleEn: "Return of Main Street: Capital Migration in the Age of Resilience", 
+    titleCn: "主街的回归：安全与韧性时代的资本迁移",
+    excerptEn: "Analyzing the strategic implications of the $1.5 trillion 'Security & Resilience' initiative and the shift toward institutional premiums for physical assets.",
+    excerptCn: "解析1.5万亿美元安全与韧性动议的战略含义。金融巨头转向产业战略资本化，资本国家化趋势下，稀缺资产获得制度性溢价..."
   },
   { 
     id: 2, 
-    date: "2025.04.28", 
-    titleEn: "Semiconductor Sovereignty: A Policy Review", 
-    titleCn: "半导体主权：政策审查与产业重塑",
-    excerptEn: "Recent legislation in East Asia and Europe is shifting the landscape of tech supply chains...",
-    excerptCn: "东亚及欧洲近期的立法举措正在从根本上改变科技供应链的竞争格局..."
+    date: "2026.01.25", 
+    titleEn: "Victory of Scarcity: The 'Assetization' of Metals", 
+    titleCn: "稀缺性的胜利：金属与矿业的“资产化”革命",
+    excerptEn: "Deep analysis of the strategic resource revaluation wave. Why metals are shifting from cyclical commodities to core strategic assets.",
+    excerptCn: "深度解析战略资源重估潮。金属正在从“周期品”转为“战略资产”，成为军费驱动资产与地缘博弈筹码..."
   },
   { 
-    id: 3, 
-    date: "2025.04.10", 
-    titleEn: "Sustainable Capital: Why Green Hydrogen is the Next Frontier", 
-    titleCn: "可持续资本：为什么绿氢是下一个投资风口",
-    excerptEn: "A deep dive into the subsidies driving the decarbonization of heavy industries...",
-    excerptCn: "深入分析推动重工业去碳化的财政补贴及其带来的投资机遇..."
+    id: 1, 
+    date: "2026.01.12", 
+    titleEn: "Physical Resilience: Paradigm Shift 2026-2030", 
+    titleCn: "软硬共生：2026-2030 投资范式的底层逻辑重构",
+    excerptEn: "Reconstructing the logic of asset allocation between de-globalization and AI-driven physical constraints.",
+    excerptCn: "跨越不确定性，在去全球化与技术冲击之间配置资产。从效率时代走向稀缺时代，数字世界撞上物理天花板..."
   }
 ];
 
@@ -40,25 +40,41 @@ const NewsSection: React.FC<NewsSectionProps> = ({ onNavigate }) => {
   return (
     <div className="py-24 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-4xl font-bold serif mb-12 text-center">{t.newsTitle}</h2>
+        <div className="flex flex-col items-center mb-16">
+          <h2 className="text-4xl font-bold serif text-slate-900">{t.newsTitle}</h2>
+          <div className="w-20 h-1 bg-amber-500 mt-4 rounded-full"></div>
+        </div>
         
         <div className="grid md:grid-cols-3 gap-8">
-          {insights.map((item) => (
+          {insights.map((item, index) => (
             <div 
               key={item.id} 
               onClick={() => onNavigate(item.id)}
-              className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all flex flex-col h-full cursor-pointer group border border-transparent hover:border-amber-100"
+              className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col h-full cursor-pointer group border border-slate-100 hover:border-amber-200 relative overflow-hidden"
             >
-              <span className="text-amber-600 font-mono text-sm font-semibold mb-4">{item.date}</span>
+              {index === 0 && (
+                <div className="absolute top-4 right-4 flex items-center space-x-1.5 px-3 py-1 bg-amber-500 rounded-full animate-pulse shadow-lg shadow-amber-500/20">
+                   <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                   <span className="text-[10px] font-black text-white uppercase tracking-widest">{lang === 'cn' ? '最新发布' : 'LATEST'}</span>
+                </div>
+              )}
+              
+              <span className="text-amber-600 font-mono text-sm font-bold mb-4 tracking-tighter">{item.date}</span>
               <h3 className="text-xl font-bold text-slate-900 mb-4 serif leading-snug group-hover:text-amber-600 transition-colors">
                 {lang === 'en' ? item.titleEn : item.titleCn}
               </h3>
-              <p className="text-slate-600 flex-grow leading-relaxed">
+              <p className="text-slate-500 flex-grow leading-relaxed font-light text-sm">
                 {lang === 'en' ? item.excerptEn : item.excerptCn}
               </p>
-              <button className="mt-8 text-slate-900 font-bold text-sm uppercase tracking-widest border-b-2 border-amber-500 pb-1 self-start group-hover:border-amber-600 transition-colors">
-                {lang === 'en' ? 'Read Analysis' : '阅读全文'}
-              </button>
+              
+              <div className="mt-8 pt-6 border-t border-slate-50 flex items-center justify-between">
+                <span className="text-slate-900 font-black text-[10px] uppercase tracking-[0.2em] group-hover:text-amber-600 transition-colors">
+                  {lang === 'en' ? 'Full Report' : '查看完整报告'}
+                </span>
+                <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-all transform group-hover:translate-x-1">
+                  &rarr;
+                </div>
+              </div>
             </div>
           ))}
         </div>

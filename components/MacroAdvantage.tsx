@@ -1,10 +1,17 @@
 
 import React from 'react';
 import { useLanguage } from '../App';
-import { Search, BarChart3, PieChart, Globe2 } from 'lucide-react';
+import { Search, BarChart3, PieChart, Globe2, ArrowUpRight } from 'lucide-react';
 
 const MacroAdvantage: React.FC = () => {
   const { t, lang } = useLanguage();
+
+  const scrollToAI = () => {
+    const aiSection = document.getElementById('ai');
+    if (aiSection) {
+      aiSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className="py-32 bg-slate-950 text-white overflow-hidden relative">
@@ -69,11 +76,21 @@ const MacroAdvantage: React.FC = () => {
                   />
                   <div className="absolute inset-0 bg-slate-900/20 group-hover:bg-transparent transition-colors"></div>
                 </div>
-                <div className="bg-slate-900 border border-white/5 p-8 rounded-3xl flex items-center justify-center text-center">
-                  <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] leading-relaxed">
-                    {lang === 'cn' ? '智库级宏观洞察' : 'Think-tank Level Macro Insights'}
-                  </p>
-                </div>
+                {/* 交互式方块 */}
+                <button 
+                  onClick={scrollToAI}
+                  className="bg-slate-900 border border-white/5 p-8 rounded-3xl flex flex-col items-center justify-center text-center group/btn hover:bg-slate-800 hover:border-amber-500/50 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-amber-500/10 active:scale-95"
+                >
+                  <div className="flex items-center space-x-2">
+                    <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] leading-relaxed group-hover/btn:text-amber-500 transition-colors">
+                      {lang === 'cn' ? '智库级宏观洞察' : 'Think-tank Level Macro Insights'}
+                    </p>
+                    <ArrowUpRight className="w-3 h-3 text-slate-600 group-hover/btn:text-amber-500 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-all" />
+                  </div>
+                  <span className="text-[9px] text-slate-600 mt-2 font-medium group-hover/btn:text-slate-400">
+                    {lang === 'cn' ? '立即咨询 AI 顾问' : 'Consult AI Advisor'}
+                  </span>
+                </button>
               </div>
             </div>
           </div>

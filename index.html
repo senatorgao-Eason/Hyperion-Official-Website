@@ -1,9 +1,14 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hyperion | Policy-Driven Excellence</title>
+  
+  <!-- 浏览器标签页图标 (Favicon) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M25 20 L40 20 L40 80 L25 80 Z' fill='%23f59e0b' /%3E%3Cpath d='M60 10 L75 10 L75 80 L60 80 Z' fill='%23f59e0b' /%3E%3Cpath d='M40 45 L60 35 L60 50 L40 60 Z' fill='%23f59e0b' fill-opacity='0.8' /%3E%3C/svg%3E">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <style>
@@ -31,6 +36,15 @@
     }
     
     html { scroll-behavior: smooth; }
+
+    @keyframes shine {
+      0% { opacity: 0.5; filter: drop-shadow(0 0 0px #f59e0b); }
+      50% { opacity: 1; filter: drop-shadow(0 0 15px #f59e0b); }
+      100% { opacity: 0.5; filter: drop-shadow(0 0 0px #f59e0b); }
+    }
+    .logo-animate {
+      animation: shine 2s infinite ease-in-out;
+    }
   </style>
   <script type="importmap">
 {
@@ -49,12 +63,20 @@
 </head>
 <body>
   <div id="root">
-    <!-- Initial Loader -->
+    <!-- Initial Loader with New Logo Symbol -->
     <div class="h-screen w-full flex items-center justify-center bg-slate-950">
       <div class="text-center">
-        <div class="logo-glow text-3xl font-bold tracking-widest text-white serif mb-4">HYPERION</div>
+        <div class="flex flex-col items-center mb-8">
+          <!-- Inline Logo for the loader -->
+          <svg width="60" height="60" viewBox="0 0 100 100" class="logo-animate mb-6" xmlns="http://www.w3.org/2000/svg">
+            <path d="M25 20 L40 20 L40 80 L25 80 Z" fill="#f59e0b" />
+            <path d="M60 10 L75 10 L75 80 L60 80 Z" fill="#f59e0b" />
+            <path d="M40 45 L60 35 L60 50 L40 60 Z" fill="#f59e0b" fill-opacity="0.8" />
+          </svg>
+          <div class="text-3xl font-bold tracking-[0.3em] text-white serif">HYPERION</div>
+        </div>
         <div class="w-48 h-1 bg-slate-800 rounded-full overflow-hidden mx-auto">
-          <div class="h-full bg-amber-500 animate-[loading_2s_ease-in-out_infinite]"></div>
+          <div class="h-full bg-amber-500 animate-[loading_1.5s_ease-in-out_infinite]"></div>
         </div>
       </div>
     </div>
