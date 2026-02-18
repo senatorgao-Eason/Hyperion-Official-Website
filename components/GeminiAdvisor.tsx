@@ -35,7 +35,7 @@ const GeminiAdvisor: React.FC = () => {
 
     try {
       // 安全地获取环境变量中的 API Key
-      const apiKey = typeof process !== 'undefined' ? process.env.API_KEY : undefined;
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
       
       if (!apiKey) {
         throw new Error('MISSING_API_KEY');
